@@ -1,5 +1,6 @@
 package kls.oauth.authserver.config;
 
+import kls.oauth.authserver.service.CustomAuthDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,19 +10,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
-public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
-
-    @Value("${config.oauth2.clientid}")
-    private String clientid;
-
-    @Value("${config.oauth2.clientSecret}")
-    private String clientSecret;
+@EnableAuthorizationServer
+public class JwkAuthorizationServiceConfiguration extends AuthorizationServerConfigurerAdapter {
 
     @Value("${config.oauth2.privateKey}")
     private String privateKey;
@@ -35,6 +32,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Autowired
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private CustomAuthDetailsService customUserDetailsService;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -43,13 +42,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory().
-                withClient(clientid).
-                secret(passwordEncoder.encode(clientSecret)).
-                scopes("read", "write").
-                authorizedGrantTypes("password", "refresh_token").
-                accessTokenValiditySeconds(3600).
-                refreshTokenValiditySeconds(18000);
+        clients.withClientDetails(customUserDetailsService);
     }
 
     @Override
@@ -67,7 +60,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
     @Bean
     public JwtAccessTokenConverter tokenEnhancer() {
-        JwtAccessTokenConverter converter = new CustomTokenEnhancer();
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey(privateKey);
         converter.setVerifierKey(publicKey);
         return converter;

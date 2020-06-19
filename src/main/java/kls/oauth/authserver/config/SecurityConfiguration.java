@@ -1,6 +1,5 @@
 package kls.oauth.authserver.config;
-
-import kls.oauth.authserver.server.CustomUserDetailsService;
+import kls.oauth.authserver.service.CustomAuthDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +19,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    CustomAuthDetailsService customUserDetailsService;
 
     @Override
     @Autowired
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(encoder());
+        auth
+                .userDetailsService(customUserDetailsService)
+                .passwordEncoder(encoder());
     }
 
     @Bean
@@ -35,8 +36,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated().and().sessionManagement()
+        http
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin().permitAll()
+                .and()
+                .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.NEVER);
+
+        http.csrf().disable();
     }
 
     @Override

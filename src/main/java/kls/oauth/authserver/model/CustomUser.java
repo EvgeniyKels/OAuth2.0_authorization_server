@@ -1,24 +1,36 @@
 package kls.oauth.authserver.model;
 
+import kls.oauth.authserver.model.entities.UserEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-public class CustomUser extends User {
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
-    private String id;
+public class CustomUser extends User {
+    private String userId;
     private String name;
 
     public CustomUser(UserEntity userEntity) {
-        super(userEntity.getEmailId(), userEntity.getPassword(), userEntity.getGrantedAuthoritiesList());
-        this.id = userEntity.getId();
+        super(userEntity.getEmail(), userEntity.getPassword(), prepareGrantedAuthorities(userEntity.getRoles(), userEntity.getPermissions()));
+        this.userId = userEntity.getUserId();
         this.name = userEntity.getName();
     }
 
-    public String getId() {
-        return id;
+    private static Collection <? extends GrantedAuthority> prepareGrantedAuthorities(List <GrantedAuthority> roles, List <GrantedAuthority> permissions) {
+        HashSet <GrantedAuthority> grantedAuthorities = new HashSet <>();
+        grantedAuthorities.addAll(roles);
+        grantedAuthorities.addAll(permissions);
+        return grantedAuthorities;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {
