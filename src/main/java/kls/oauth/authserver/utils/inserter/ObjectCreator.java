@@ -45,21 +45,23 @@ class ObjectCreator {
         Set<String>resourceIds = new HashSet <>();
         resourceIds.add("resource_server_1");
 
-        String clientSecret = "client_secret";
+        Set<String>scope = new HashSet <>();
+        scope.add("read");
+
         return new ClientEntity(
                 "1_id",
                 resourceIds,
                 true,
                 passwordEncoder.encode("client_1_secret"),
                 false,
-                null,
+                scope,
                 authorizedGrantTypes,
                 redirectUris,
-                null,
+                new HashSet <>(),
                 10800,
                 60000,
                 false,
-                null
+                new HashMap <>()
         );
     }
 }

@@ -1,5 +1,6 @@
 package kls.oauth.authserver;
 
+import com.nimbusds.jose.jwk.JWKSet;
 import kls.oauth.authserver.utils.inserter.Inserter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,3 +21,5 @@ public class AuthServerApplication {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 }
+
+//https://www.baeldung.com/spring-security-oauth2-jws-jwk

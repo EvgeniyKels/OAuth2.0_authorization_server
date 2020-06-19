@@ -1,4 +1,4 @@
-package kls.oauth.authserver.model;
+package kls.oauth.authserver.model.dto;
 
 import kls.oauth.authserver.model.entities.ClientEntity;
 import org.springframework.security.core.GrantedAuthority;

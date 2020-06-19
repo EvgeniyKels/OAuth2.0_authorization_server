@@ -6,15 +6,17 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.1.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
+
     <groupId>kls.oauth2.authserver</groupId>
     <artifactId>authserver</artifactId>
-    <version>0.1.0</version>
+    <version>0.5.0</version>
 
     <properties>
         <java.version>1.8</java.version>
         <oauth2.autoconfig.version>2.3.1.RELEASE</oauth2.autoconfig.version>
+        <nimbus.jose.jwt.version>8.19</nimbus.jose.jwt.version>
     </properties>
 
     <dependencies>
@@ -31,6 +33,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus.jose.jwt.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -40,5 +47,15 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources/filtered</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 </project>

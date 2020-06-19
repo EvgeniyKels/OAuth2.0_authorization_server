@@ -1,11 +1,16 @@
 package kls.oauth.authserver.config;
 
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
 import kls.oauth.authserver.service.CustomAuthDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -15,16 +20,20 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+
+import java.security.KeyPair;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Collections;
+import java.util.Map;
 
 @Configuration
 @EnableAuthorizationServer
 public class JwkAuthorizationServiceConfiguration extends AuthorizationServerConfigurerAdapter {
-
-    @Value("${config.oauth2.privateKey}")
-    private String privateKey;
-
-    @Value("${config.oauth2.publicKey}")
-    private String publicKey;
+    private String keyFilePath = "kls-jwt.jks";
+    private String password = "kls-pass";
+    private String key = "kls-oauth-jwt";
+    private String keyId = "kls_key_id";
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -37,7 +46,23 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
+        security.checkTokenAccess("isAuthenticated()");
+    }
+
+    @Bean
+    public KeyPair keyPair() {
+        ClassPathResource keyStoreFile = new ClassPathResource(keyFilePath);
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(keyStoreFile, password.toCharArray());
+        return keyStoreKeyFactory.getKeyPair(key);
+    }
+
+    @Bean
+    public JWKSet jwkSet() {
+        RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey)keyPair().getPublic())
+                .keyUse(KeyUse.SIGNATURE)
+                .algorithm(JWSAlgorithm.RS256)
+                .keyID(keyId);
+        return new JWKSet(builder.build());
     }
 
     @Override
@@ -60,9 +85,8 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
 
     @Bean
     public JwtAccessTokenConverter tokenEnhancer() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(privateKey);
-        converter.setVerifierKey(publicKey);
-        return converter;
+        Map <String, String> customHeaders =
+                Collections.singletonMap("kid", keyId);
+        return new JWTCustomAccessTokenConverter(customHeaders, keyPair());
     }
 }

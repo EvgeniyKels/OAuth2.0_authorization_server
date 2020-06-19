@@ -1,7 +1,7 @@
 package kls.oauth.authserver.service;
 
-import kls.oauth.authserver.model.CustomClient;
-import kls.oauth.authserver.model.CustomUser;
+import kls.oauth.authserver.model.dto.CustomClient;
+import kls.oauth.authserver.model.dto.CustomUser;
 import kls.oauth.authserver.model.entities.ClientEntity;
 import kls.oauth.authserver.model.entities.UserEntity;
 import kls.oauth.authserver.model.repos.IClientRepository;
