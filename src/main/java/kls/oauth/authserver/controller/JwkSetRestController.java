@@ -12,7 +12,7 @@ public class JwkSetRestController {
     @Autowired
     private JWKSet jwkSet;
 
-    @GetMapping("/.key/jwks.json")
+    @GetMapping("/.key/jwks.json") //TODO
     public Map <String, Object> keys() {
         return this.jwkSet.toJSONObject();
     }

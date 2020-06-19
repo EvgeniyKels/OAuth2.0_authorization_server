@@ -46,7 +46,7 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.checkTokenAccess("isAuthenticated()");
+        security.tokenKeyAccess("denyAll()").checkTokenAccess("isAuthenticated()");
     }
 
     @Bean

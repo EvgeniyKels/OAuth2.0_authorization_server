@@ -38,6 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/", "/login**", "/oauth/authorize", "/oauth/authorize**", "/.key/jwks.json")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
