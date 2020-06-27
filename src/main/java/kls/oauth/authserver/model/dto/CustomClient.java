@@ -106,4 +106,23 @@ public class CustomClient implements ClientDetails {
     public Map <String, Object> getAdditionalInformation() {
         return this.additionalInformation;
     }
+
+    @Override
+    public String toString() {
+        return "CustomClient{" +
+                "clientId='" + clientId + '\'' +
+                ", resourceIds=" + resourceIds +
+                ", isSecretRequired=" + isSecretRequired +
+                ", clientSecret='" + clientSecret + '\'' +
+                ", isScoped=" + isScoped +
+                ", scope=" + scope +
+                ", authorizedGrantTypes=" + authorizedGrantTypes +
+                ", registeredRedirectUri=" + registeredRedirectUri +
+                ", authorities=" + authorities +
+                ", accessTokenValiditySeconds=" + accessTokenValiditySeconds +
+                ", refreshTokenValiditySeconds=" + refreshTokenValiditySeconds +
+                ", isAutoApprove=" + isAutoApprove +
+                ", additionalInformation=" + additionalInformation +
+                '}';
+    }
 }

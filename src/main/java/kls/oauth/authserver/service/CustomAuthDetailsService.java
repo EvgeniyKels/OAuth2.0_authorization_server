@@ -29,7 +29,6 @@ public class CustomAuthDetailsService implements UserDetailsService, ClientDetai
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         Objects.requireNonNull(userEmail, "user email null");
-        LOGGER.info("loadUserByUsername received: " + userEmail);
         UserEntity userEntity = userRepository.reciveUserByEmail(userEmail);
         return new CustomUser(userEntity);
     }
@@ -37,8 +36,8 @@ public class CustomAuthDetailsService implements UserDetailsService, ClientDetai
     @Override
     public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
         Objects.requireNonNull(clientId);
-        LOGGER.info("loadClientByClientId received: " + clientId);
         ClientEntity clientEntity = clientRepository.receiveClientByClient(clientId);
+        LOGGER.info(clientEntity.toString());
         return new CustomClient(clientEntity);
     }
 }

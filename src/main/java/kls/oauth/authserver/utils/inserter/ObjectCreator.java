@@ -34,8 +34,10 @@ class ObjectCreator {
         return users;
     }
 
-    ClientEntity createClient() {
+    ClientEntity createClientWithAuthCode() {
         Set <String> redirectUris = new HashSet <>();
+        redirectUris.add("http://localhost:8090");
+        redirectUris.add("http://localhost:8000/index");
         redirectUris.add("http://localhost:8090/showProtectedResource");
 
         Set<String>authorizedGrantTypes = new HashSet <>();
@@ -52,7 +54,7 @@ class ObjectCreator {
                 "1_id",
                 resourceIds,
                 true,
-                passwordEncoder.encode("client_1_secret"),
+                passwordEncoder.encode("secret"),
                 false,
                 scope,
                 authorizedGrantTypes,
@@ -60,8 +62,38 @@ class ObjectCreator {
                 new HashSet <>(),
                 10800,
                 60000,
-                false,
+                true,
                 new HashMap <>()
         );
     }
+
+    ClientEntity createClientWithPasswordOwner() {
+
+        Set<String>authorizedGrantTypes = new HashSet <>();
+        authorizedGrantTypes.add("password");
+        authorizedGrantTypes.add("refresh_token");
+
+        Set<String>resourceIds = new HashSet <>();
+        resourceIds.add("resource_server_1");
+
+        Set<String>scope = new HashSet <>();
+        scope.add("read");
+
+        return new ClientEntity(
+                "2_id",
+                resourceIds,
+                true,
+                passwordEncoder.encode("secret"),
+                false,
+                scope,
+                authorizedGrantTypes,
+                new HashSet<>(),
+                new HashSet<>(),
+                10800,
+                60000,
+                true,
+                new HashMap <>()
+        );
+    }
+
 }

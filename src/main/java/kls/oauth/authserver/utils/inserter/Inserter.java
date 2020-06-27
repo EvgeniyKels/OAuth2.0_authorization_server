@@ -21,6 +21,7 @@ public class Inserter {
 
         ObjectCreator objectCreator = new ObjectCreator(passwordEncoder);
         userRepository.saveAll(objectCreator.createUserEntity(numberOfUsers));
-        clientRepository.save(objectCreator.createClient());
+        clientRepository.save(objectCreator.createClientWithAuthCode());
+        clientRepository.save(objectCreator.createClientWithPasswordOwner());
     }
 }
