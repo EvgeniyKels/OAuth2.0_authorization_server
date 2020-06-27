@@ -46,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http//.cors().and()
+        http
                 .authorizeRequests()
                 .antMatchers("/oauth/token", "/", "/login**", "/oauth/authorize", "/oauth/authorize**", "/.key/jwks.json")
                 .permitAll()
@@ -61,13 +61,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
 
         http.addFilterBefore(loginFilter(), WebAsyncManagerIntegrationFilter.class);
-
-//        http.addFilterAfter(getCorsFilter(), LogFilter.class);
     }
-
-//    private Filter getCorsFilter() {
-//        return new CorsFilter();
-//    }
 
     @Bean
     public Filter loginFilter() {
