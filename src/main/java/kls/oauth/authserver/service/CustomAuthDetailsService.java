@@ -35,7 +35,7 @@ public class CustomAuthDetailsService implements UserDetailsService, ClientDetai
 
     @Override
     public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
-        Objects.requireNonNull(clientId);
+        Objects.requireNonNull(clientId, "client id null");
         ClientEntity clientEntity = clientRepository.receiveClientByClient(clientId);
         LOGGER.info(clientEntity.toString());
         return new CustomClient(clientEntity);

@@ -37,7 +37,7 @@ class ObjectCreator {
     ClientEntity createClientWithAuthCode() {
         Set <String> redirectUris = new HashSet <>();
         redirectUris.add("http://localhost:8090");
-        redirectUris.add("http://localhost:8000/index");
+        redirectUris.add("http://localhost:8000");
         redirectUris.add("http://localhost:8090/showProtectedResource");
 
         Set<String>authorizedGrantTypes = new HashSet <>();

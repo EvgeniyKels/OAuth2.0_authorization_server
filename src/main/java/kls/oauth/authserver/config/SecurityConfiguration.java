@@ -12,13 +12,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -44,11 +46,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http
-                .cors()
-                .and()
+        http//.cors().and()
                 .authorizeRequests()
-                .antMatchers("/", "/login**", "/oauth/authorize", "/oauth/authorize**", "/.key/jwks.json")
+                .antMatchers("/oauth/token", "/", "/login**", "/oauth/authorize", "/oauth/authorize**", "/.key/jwks.json")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -57,19 +57,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.NEVER);
-//                .sessionCreationPolicy(SessionCreationPolicy.NEVER).enableSessionUrlRewriting(true);
 
         http.csrf().disable();
 
         http.addFilterBefore(loginFilter(), WebAsyncManagerIntegrationFilter.class);
+
+//        http.addFilterAfter(getCorsFilter(), LogFilter.class);
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
-    }
+//    private Filter getCorsFilter() {
+//        return new CorsFilter();
+//    }
 
     @Bean
     public Filter loginFilter() {
