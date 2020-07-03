@@ -70,7 +70,7 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.withClientDetails(customUserDetailsService);
     }
-
+/*/*/
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.
