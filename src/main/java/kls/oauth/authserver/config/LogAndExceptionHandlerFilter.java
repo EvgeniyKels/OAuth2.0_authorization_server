@@ -1,6 +1,10 @@
 package kls.oauth.authserver.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,6 +24,7 @@ public class LogAndExceptionHandlerFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             LOGGER.info(httpServletRequestToString(request));
+            LOGGER.info(request.getSession().getId());
             filterChain.doFilter(request, response);
             LOGGER.info(String.valueOf(response.getStatus()));
         } catch (Exception e) {

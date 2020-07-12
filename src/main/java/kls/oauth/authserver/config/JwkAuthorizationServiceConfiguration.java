@@ -7,10 +7,10 @@ import com.nimbusds.jose.jwk.RSAKey;
 import kls.oauth.authserver.service.CustomAuthDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -18,9 +18,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
@@ -37,12 +38,13 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
     @Autowired
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
     @Autowired
     private CustomAuthDetailsService customUserDetailsService;
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -79,9 +81,22 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
                 accessTokenConverter(tokenEnhancer());
     }
 
+//    @Bean
+//    public JwtTokenStore tokenStore() {
+//        return new JwtTokenStore(tokenEnhancer());
+//    }
+
+//    @Bean
+//    public TokenStore tokenStore() {
+//        return new MongoTokenStore();
+//    }
+
     @Bean
-    public JwtTokenStore tokenStore() {
-        return new JwtTokenStore(tokenEnhancer());
+    public TokenStore tokenStore() {
+        Jackson2SerializationStrategy jackson2SerializationStrategy = new Jackson2SerializationStrategy();
+        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+        redisTokenStore.setSerializationStrategy(jackson2SerializationStrategy);
+        return redisTokenStore;
     }
 
     @Bean
