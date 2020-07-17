@@ -18,6 +18,10 @@ public class AccessTokenJackson2Serializer extends StdSerializer<OAuth2AccessTok
         super(t);
     }
 
+    public AccessTokenJackson2Serializer() {
+        super(OAuth2AccessToken.class);
+    }
+
     @Override
     public void serialize(OAuth2AccessToken value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         customSerialization(value, gen, provider, null);

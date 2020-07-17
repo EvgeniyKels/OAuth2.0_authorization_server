@@ -1,13 +1,13 @@
 package kls.oauth.authserver.utils.serialization;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import kls.oauth.authserver.utils.serialization.OAuth2AuthenticationDeserializer;
 import org.springframework.security.jackson2.CoreJackson2Module;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Deserializer;
-import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Serializer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.redis.StandardStringSerializationStrategy;
 import org.springframework.security.web.jackson2.WebJackson2Module;
@@ -19,9 +19,19 @@ public class Jackson2SerializationStrategy extends StandardStringSerializationSt
 
     public Jackson2SerializationStrategy() {
         objectMapper = new ObjectMapper();
+        objectMapper.disable(MapperFeature.AUTO_DETECT_SETTERS);
+        objectMapper.addMixIn(OAuth2AccessToken.class, AccessTokenMixIn.class);
+        objectMapper.addMixIn(OAuth2Authentication.class, OAuth2AuthenticationMixin.class);
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(OAuth2Authentication.class, new OAuth2AuthenticationDeserializer());
+        SimpleModule simpleModule1 = new SimpleModule();
+        simpleModule1.addDeserializer(OAuth2AccessToken.class, new AccessTokenJackson2Deserializer(OAuth2AccessToken.class));
+        SimpleModule simpleModule2 = new SimpleModule();
+        simpleModule2.addSerializer(OAuth2AccessToken.class, new AccessTokenJackson2Serializer(OAuth2AccessToken.class));
+
         objectMapper.registerModule(simpleModule);
+        objectMapper.registerModule(simpleModule1);
+        objectMapper.registerModule(simpleModule2);
         objectMapper.registerModule(new CoreJackson2Module());
         objectMapper.registerModule(new WebJackson2Module());
     }
