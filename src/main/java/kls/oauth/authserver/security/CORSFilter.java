@@ -1,4 +1,4 @@
-package kls.oauth.authserver.config;
+package kls.oauth.authserver.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

@@ -1,4 +1,4 @@
-package kls.oauth.authserver.config;
+package kls.oauth.authserver.security;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.RsaSigner;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;

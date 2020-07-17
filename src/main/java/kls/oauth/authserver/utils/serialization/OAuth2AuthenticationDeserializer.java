@@ -1,4 +1,4 @@
-package kls.oauth.authserver.config;
+package kls.oauth.authserver.utils.serialization;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
 public class OAuth2AuthenticationDeserializer extends JsonDeserializer<OAuth2Authentication> {
     @Override
     public OAuth2Authentication deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {

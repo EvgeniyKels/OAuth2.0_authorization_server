@@ -1,12 +1,13 @@
-package kls.oauth.authserver.config;
+package kls.oauth.authserver.utils.serialization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import kls.oauth.authserver.utils.serialization.OAuth2AuthenticationDeserializer;
 import org.springframework.security.jackson2.CoreJackson2Module;
-import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Serializer;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Deserializer;
+import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Serializer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.redis.StandardStringSerializationStrategy;
 import org.springframework.security.web.jackson2.WebJackson2Module;
@@ -15,7 +16,7 @@ import java.io.IOException;
 
 public class Jackson2SerializationStrategy extends StandardStringSerializationStrategy {
     private ObjectMapper objectMapper;
-    Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer(Object.class);
+
     public Jackson2SerializationStrategy() {
         objectMapper = new ObjectMapper();
         SimpleModule simpleModule = new SimpleModule();
@@ -27,8 +28,6 @@ public class Jackson2SerializationStrategy extends StandardStringSerializationSt
 
     @Override
     protected <T> T deserializeInternal(byte[] bytes, Class<T> clazz) {
-        System.out.println(new String(bytes));
-        System.out.println(clazz.getSimpleName());
         T t = null;
         try {
             t = objectMapper.readValue(bytes, clazz);
@@ -37,25 +36,18 @@ public class Jackson2SerializationStrategy extends StandardStringSerializationSt
         }
         return t;
     }
-
+//    Type id handling
+//    not implemented for type
+//    org.springframework.security.oauth2.common.OAuth2AccessToken
+//            (by serializer of type org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Serializer
     @Override
     protected byte[] serializeInternal(Object object) {
-//        byte[] serialize = serializer.serialize(object);
-//        byte[] bytes = new byte[0];
-//        try {
-//            bytes = objectMapper.writeValueAsString(object).getBytes();
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//        return bytes;
-        return serializer.serialize(object);
+        byte[] byteArr = null;
+        try {
+            byteArr = objectMapper.writeValueAsBytes(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return byteArr;
     }
-//
-//    public Jackson2JsonRedisSerializer getSerializer() {
-//        return serializer;
-//    }
-//
-//    public void setSerializer(Jackson2JsonRedisSerializer serializer) {
-//        this.serializer = serializer;
-//    }
 }

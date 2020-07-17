@@ -1,4 +1,4 @@
-package kls.oauth.authserver.config;
+package kls.oauth.authserver.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
