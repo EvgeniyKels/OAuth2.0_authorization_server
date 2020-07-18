@@ -35,7 +35,7 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 <!--        JDBC session storing -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-jdbc</artifactId>
-        </dependency>
+        </dependency>   -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

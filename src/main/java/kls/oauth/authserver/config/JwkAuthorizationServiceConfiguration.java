@@ -9,9 +9,13 @@ import kls.oauth.authserver.service.CustomAuthDetailsService;
 import kls.oauth.authserver.utils.serialization.Jackson2SerializationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileUrlResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +30,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
+import java.net.MalformedURLException;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
@@ -34,10 +39,14 @@ import java.util.Map;
 @Configuration
 @EnableAuthorizationServer
 public class JwkAuthorizationServiceConfiguration extends AuthorizationServerConfigurerAdapter {
-    private String keyFilePath = "kls-jwt.jks";
-    private String password = "kls-pass";
-    private String key = "kls-oauth-jwt";
-    private String keyId = "kls_key_id";
+    @Value("${jks.path}")
+    private String keyFilePath;
+    @Value("${jks.password}")
+    private String password;
+    @Value("${jks.key}")
+    private String key;
+    @Value("${jks.keyId}")
+    private String keyId;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -48,7 +57,6 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
     private CustomAuthDetailsService customUserDetailsService;
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
-
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 //        security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
@@ -57,7 +65,12 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
 
     @Bean
     public KeyPair keyPair() {
-        ClassPathResource keyStoreFile = new ClassPathResource(keyFilePath);
+        FileUrlResource keyStoreFile = null;
+        try {
+            keyStoreFile = new FileUrlResource(keyFilePath);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(keyStoreFile, password.toCharArray());
         return keyStoreKeyFactory.getKeyPair(key);
     }
@@ -84,23 +97,23 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
                 accessTokenConverter(tokenEnhancer());
     }
 
-//    @Bean
-//    public JwtTokenStore tokenStore() {
-//        return new JwtTokenStore(tokenEnhancer());
-//    }
+    @Bean
+    public JwtTokenStore tokenStore() {
+        return new JwtTokenStore(tokenEnhancer());
+    }
 
 //    @Bean
 //    public TokenStore tokenStore() {
 //        return new MongoTokenStore();
 //    }
 
-    @Bean
-    public TokenStore tokenStore() {
-        Jackson2SerializationStrategy jackson2SerializationStrategy = new Jackson2SerializationStrategy();
-        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
-        redisTokenStore.setSerializationStrategy(jackson2SerializationStrategy);
-        return redisTokenStore;
-    }
+//    @Bean
+//    public TokenStore tokenStore() {
+//        Jackson2SerializationStrategy jackson2SerializationStrategy = new Jackson2SerializationStrategy();
+//        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+//        redisTokenStore.setSerializationStrategy(jackson2SerializationStrategy);
+//        return redisTokenStore;
+//    }
 
     @Bean
     public JwtAccessTokenConverter tokenEnhancer() {
