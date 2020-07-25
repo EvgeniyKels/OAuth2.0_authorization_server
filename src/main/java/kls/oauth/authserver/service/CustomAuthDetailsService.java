@@ -7,6 +7,7 @@ import kls.oauth.authserver.model.entities.UserEntity;
 import kls.oauth.authserver.model.repos.IClientRepository;
 import kls.oauth.authserver.model.repos.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -55,13 +55,16 @@ public class AccessTokenJackson2Serializer extends StdSerializer<OAuth2AccessTok
                 sb.append(scope);
                 sb.append(" ");
             }
-            gen.writeStringField(OAuth2AccessToken.SCOPE, sb.substring(0, sb.length() - 1));
+            String substring = sb.substring(0, sb.length() - 1);
+            gen.writeStringField(OAuth2AccessToken.SCOPE, substring);
         }
         Map<String, Object> additionalInformation = token.getAdditionalInformation();
         if (additionalInformation != null && !additionalInformation.isEmpty()) {
             Set<Map.Entry<String, Object>> entries = additionalInformation.entrySet();
             for (Map.Entry<String, Object> entry: entries) {
-                gen.writeObjectField(entry.getKey(), entry.getValue());
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                gen.writeObjectField(key, value);
             }
         }
         gen.writeEndObject();

@@ -12,10 +12,7 @@ import org.springframework.security.oauth2.common.DefaultOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.springframework.security.oauth2.common.OAuth2AccessToken.*;
 
@@ -28,37 +25,66 @@ public class AccessTokenJackson2Deserializer extends StdDeserializer<OAuth2Acces
     protected AccessTokenJackson2Deserializer(Class<OAuth2AccessToken> t) {
         super(t);
     }
+
     @Override
     public OAuth2AccessToken deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> additionalInfo = new LinkedHashMap<>();
-        JsonNode jsonNode = p.getCodec().readTree(p);
-        String tokenValue = readJsonNode(jsonNode, ACCESS_TOKEN);
-        String tokenType = readJsonNode(jsonNode, TOKEN_TYPE);
-        String refreshTokenNode = readJsonNode(jsonNode, REFRESH_TOKEN);
-        JsonNode jsonNodeExpiresIn = jsonNode.get(EXPIRES_IN);
-        int expiresIn = 0;
-        if (jsonNodeExpiresIn != null && !jsonNodeExpiresIn.isEmpty()) {
-            expiresIn = jsonNodeExpiresIn.asInt();
-        }
-        Set<String>scopes = new HashSet<>();
-        JsonNode jsonNodeScope = jsonNode.get(SCOPE);
-        for (int i = 0; jsonNodeScope.has(i); i++) {
-            scopes.add(jsonNodeScope.get(i).asText());
-        }
-        return new CustomOAuthAccessToken(additionalInfo, scopes, new DefaultOAuth2RefreshToken(refreshTokenNode), tokenType, false, null, expiresIn, tokenValue);
+        return deser(p, ctxt, null);
     }
 
-    private String readJsonNode(JsonNode jsonNode, String fieldName) {
-        JsonNode innerNode = jsonNode.get(fieldName);
-        if (innerNode != null && !innerNode.isEmpty()) {
-            return innerNode.asText();
+    private OAuth2AccessToken deser(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
+        Map<String, Object> additionalInfo = new LinkedHashMap<>();
+        JsonNode jsonNode = p.getCodec().readTree(p);
+        System.out.println(jsonNode);
+        JsonNode tokenValueNode = jsonNode.get(ACCESS_TOKEN);
+        String tokenValue = null;
+        if (tokenValueNode != null && !tokenValueNode.isMissingNode()) {
+            tokenValue = tokenValueNode.asText();
         }
-        return null;
+        DefaultOAuth2AccessToken defaultOAuth2AccessToken = new DefaultOAuth2AccessToken(tokenValue);
+        Iterator<String> fieldNames = jsonNode.fieldNames();
+        while (fieldNames.hasNext()) {
+            String field = fieldNames.next();
+            if(!field.equals(ACCESS_TOKEN)
+                    && !field.equals(EXPIRES_IN)
+                    && !field.equals(REFRESH_TOKEN)
+                    && !field.equals(SCOPE)
+                    && !field.equals(TOKEN_TYPE)
+                    && !field.equals("@class")) {
+                additionalInfo.put(field, jsonNode.get(field));
+            }
+        }
+        JsonNode tokenTypeNode = jsonNode.get(TOKEN_TYPE);
+        String tokenType = null;
+        if (tokenTypeNode != null && !tokenTypeNode.isMissingNode()) {
+            tokenType = tokenTypeNode.asText();
+            defaultOAuth2AccessToken.setTokenType(tokenType);
+        }
+        JsonNode refreshTokenNode = jsonNode.get(REFRESH_TOKEN);
+        String refreshToken = null;
+        if (refreshTokenNode != null && !refreshTokenNode.isMissingNode()) {
+            refreshToken = refreshTokenNode.asText();
+            DefaultOAuth2RefreshToken defaultOAuth2RefreshToken = new DefaultOAuth2RefreshToken(refreshToken);
+            defaultOAuth2AccessToken.setRefreshToken(defaultOAuth2RefreshToken);
+        }
+        JsonNode jsonNodeExpiresIn = jsonNode.get(EXPIRES_IN);
+        int expiresIn = 0;
+        if (jsonNodeExpiresIn != null && !jsonNodeExpiresIn.isMissingNode()) {
+            expiresIn = jsonNodeExpiresIn.asInt();
+            defaultOAuth2AccessToken.setExpiration(new Date(System.currentTimeMillis() + expiresIn * 1000));
+        }
+        Set<String> scopes = new HashSet<>();
+        JsonNode jsonNodeScope = jsonNode.get(SCOPE);
+        if (jsonNodeScope != null && !jsonNodeScope.isMissingNode()) {
+            String scope = jsonNodeScope.asText();
+            scopes.add(scope);
+        }
+        defaultOAuth2AccessToken.setScope(scopes);
+        defaultOAuth2AccessToken.setAdditionalInformation(additionalInfo);
+        return defaultOAuth2AccessToken;
     }
 
     @Override
-    public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
-        return null;
+    public OAuth2AccessToken deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
+        return deser(p, ctxt, typeDeserializer);
     }
 }

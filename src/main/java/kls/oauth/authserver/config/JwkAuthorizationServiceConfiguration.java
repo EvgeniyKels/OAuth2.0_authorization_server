@@ -97,23 +97,23 @@ public class JwkAuthorizationServiceConfiguration extends AuthorizationServerCon
                 accessTokenConverter(tokenEnhancer());
     }
 
-    @Bean
-    public JwtTokenStore tokenStore() {
-        return new JwtTokenStore(tokenEnhancer());
-    }
+//    @Bean
+//    public JwtTokenStore tokenStore() {
+//        return new JwtTokenStore(tokenEnhancer());
+//    }
 
 //    @Bean
 //    public TokenStore tokenStore() {
 //        return new MongoTokenStore();
 //    }
 
-//    @Bean
-//    public TokenStore tokenStore() {
-//        Jackson2SerializationStrategy jackson2SerializationStrategy = new Jackson2SerializationStrategy();
-//        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
-//        redisTokenStore.setSerializationStrategy(jackson2SerializationStrategy);
-//        return redisTokenStore;
-//    }
+    @Bean
+    public TokenStore tokenStore() {
+        Jackson2SerializationStrategy jackson2SerializationStrategy = new Jackson2SerializationStrategy();
+        RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+        redisTokenStore.setSerializationStrategy(jackson2SerializationStrategy);
+        return redisTokenStore;
+    }
 
     @Bean
     public JwtAccessTokenConverter tokenEnhancer() {
