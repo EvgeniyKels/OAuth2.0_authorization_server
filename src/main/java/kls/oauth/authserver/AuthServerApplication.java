@@ -22,3 +22,4 @@ public class AuthServerApplication {
 }
 
 //https://www.baeldung.com/spring-security-oauth2-jws-jwk
+//https://www.programmersought.com/article/32832066603/

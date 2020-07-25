@@ -41,7 +41,7 @@ public class OAuth2AuthenticationDeserializer extends JsonDeserializer<OAuth2Aut
 
         JsonNode details = jsonNode.get("details");
         if(details != null && !details.isMissingNode()) {
-            oAuth2Authentication.setDetails(om.readValue(details.traverse(), OAuth2AuthenticationDetails.class));
+            oAuth2Authentication.setDetails(om.readValue(details.traverse(jp.getCodec()), OAuth2AuthenticationDetails.class));
         }
 
         return oAuth2Authentication;

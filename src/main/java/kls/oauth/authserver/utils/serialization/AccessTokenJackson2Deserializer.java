@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.DefaultOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,7 +35,6 @@ public class AccessTokenJackson2Deserializer extends StdDeserializer<OAuth2Acces
     private OAuth2AccessToken deser(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws IOException {
         Map<String, Object> additionalInfo = new LinkedHashMap<>();
         JsonNode jsonNode = p.getCodec().readTree(p);
-        System.out.println(jsonNode);
         JsonNode tokenValueNode = jsonNode.get(ACCESS_TOKEN);
         String tokenValue = null;
         if (tokenValueNode != null && !tokenValueNode.isMissingNode()) {
@@ -75,8 +75,12 @@ public class AccessTokenJackson2Deserializer extends StdDeserializer<OAuth2Acces
         Set<String> scopes = new HashSet<>();
         JsonNode jsonNodeScope = jsonNode.get(SCOPE);
         if (jsonNodeScope != null && !jsonNodeScope.isMissingNode()) {
-            String scope = jsonNodeScope.asText();
-            scopes.add(scope);
+            if (jsonNodeScope.isArray()) {
+                String scope = jsonNodeScope.asText();
+                scopes.add(scope);
+            } else {
+                scopes = OAuth2Utils.parseParameterList(jsonNodeScope.asText());
+            }
         }
         defaultOAuth2AccessToken.setScope(scopes);
         defaultOAuth2AccessToken.setAdditionalInformation(additionalInfo);
