@@ -27,8 +27,8 @@ class ObjectCreator {
                             "user_" + i,
                             "email" + i + "@gmail.com",
                             passwordEncoder.encode("password"),
-                            Arrays.stream(permissions).map(SimpleGrantedAuthority::new).collect(Collectors.toList()),
-                            Arrays.stream(roles).map(SimpleGrantedAuthority::new).collect(Collectors.toList())));
+                            Arrays.asList(permissions),
+                            Arrays.asList(roles)));
         }
 
         return users;

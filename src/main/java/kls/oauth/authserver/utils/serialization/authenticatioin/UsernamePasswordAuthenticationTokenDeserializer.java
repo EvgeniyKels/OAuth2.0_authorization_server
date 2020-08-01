@@ -1,4 +1,4 @@
-package kls.oauth.authserver.utils.serialization;
+package kls.oauth.authserver.utils.serialization.authenticatioin;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +12,7 @@ import kls.oauth.authserver.model.dto.CustomUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -28,16 +29,15 @@ public class UsernamePasswordAuthenticationTokenDeserializer extends JsonDeseria
         ObjectMapper om = (ObjectMapper)p.getCodec();
         JsonNode jsonNode = om.readTree(p);
         System.out.println(jsonNode);
-//        UsernamePasswordAuthenticationToken(Object principal, Object credentials)
-//        UsernamePasswordAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority > authorities)
+
         JsonNode principalNode = jsonNode.get("principal");
         Object principal = null;
         if (principalNode != null) {
-            principal = om.readValue(principalNode.toString(), CustomUser.class);
+            principal = om.readValue(principalNode.traverse(p.getCodec()), CustomUser.class);
         }
 
         JsonNode authoritiesNode = jsonNode.get("authorities").get(1);
-        System.out.println(authoritiesNode);
+
         Collection<GrantedAuthority>grantedAuthorities = new HashSet<>();
         if (authoritiesNode != null && !authoritiesNode.isEmpty()) {
             for (int i = 0; authoritiesNode.has(i); i++) {

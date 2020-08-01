@@ -1,4 +1,4 @@
-package kls.oauth.authserver.utils.serialization;
+package kls.oauth.authserver.utils.serialization.token;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class AccessTokenJackson2Serializer extends StdSerializer<OAuth2AccessToken> {
 
-    protected AccessTokenJackson2Serializer(Class<OAuth2AccessToken> t) {
+    public AccessTokenJackson2Serializer(Class<OAuth2AccessToken> t) {
         super(t);
     }
 

@@ -1,8 +1,8 @@
-package kls.oauth.authserver.utils.serialization;
+package kls.oauth.authserver.utils.serialization.token.mixins;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import kls.oauth.authserver.utils.serialization.AccessTokenJackson2Deserializer;
-import kls.oauth.authserver.utils.serialization.AccessTokenJackson2Serializer;
+import kls.oauth.authserver.utils.serialization.token.AccessTokenJackson2Deserializer;
+import kls.oauth.authserver.utils.serialization.token.AccessTokenJackson2Serializer;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = AccessTokenJackson2Serializer.class)

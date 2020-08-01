@@ -21,11 +21,11 @@ public class UserEntity {
     @Field(name = "password")
     private String password;
     @Field(name = "role")
-    private List<GrantedAuthority>roles;
+    private List<String>roles;
     @Field(name = "permission")
-    private List<GrantedAuthority>permissions;
+    private List<String>permissions;
 
-    public UserEntity(String userId, String name, String email, String password, List <GrantedAuthority> roles, List <GrantedAuthority> permissions) {
+    public UserEntity(String userId, String name, String email, String password, List <String> roles, List <String> permissions) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -53,11 +53,11 @@ public class UserEntity {
         return password;
     }
 
-    public List <GrantedAuthority> getRoles() {
+    public List <String> getRoles() {
         return roles;
     }
 
-    public List <GrantedAuthority> getPermissions() {
+    public List <String> getPermissions() {
         return permissions;
     }
 

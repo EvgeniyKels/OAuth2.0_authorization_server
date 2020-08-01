@@ -1,9 +1,11 @@
-package kls.oauth.authserver.utils.serialization;
+package kls.oauth.authserver.utils.serialization.authenticatioin;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import kls.oauth.authserver.utils.serialization.authenticatioin.mixins.OAuth2RequestMixIn;
+import kls.oauth.authserver.utils.serialization.authenticatioin.mixins.UsernamePasswordAuthenticationTokenMixIn;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -17,17 +19,19 @@ public class OAuth2AuthenticationDeserializer extends JsonDeserializer<OAuth2Aut
     public OAuth2Authentication deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode jsonNode = jp.getCodec().readTree(jp);
         JsonNode userAuthentication = jsonNode.get("userAuthentication");
+
         ObjectMapper om = new ObjectMapper();
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         om.addMixIn(UsernamePasswordAuthenticationToken.class, UsernamePasswordAuthenticationTokenMixIn.class);
         om.addMixIn(OAuth2Request.class, OAuth2RequestMixIn.class);
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addDeserializer(UsernamePasswordAuthenticationToken.class, new UsernamePasswordAuthenticationTokenDeserializer());
-        om.registerModule(simpleModule);
 
-        SimpleModule simpleModule1 = new SimpleModule();
-        simpleModule1.addDeserializer(OAuth2Request.class, new OAuth2RequestDeserializer());
-        om.registerModule(simpleModule1);
+        SimpleModule userPasswordAuthToken = new SimpleModule();
+        userPasswordAuthToken.addDeserializer(UsernamePasswordAuthenticationToken.class, new UsernamePasswordAuthenticationTokenDeserializer());
+        om.registerModule(userPasswordAuthToken);
+
+        SimpleModule requestModule = new SimpleModule();
+        requestModule.addDeserializer(OAuth2Request.class, new OAuth2RequestDeserializer());
+        om.registerModule(requestModule);
 
         Authentication authentication = null;
         if (userAuthentication != null && !userAuthentication.isMissingNode()) {

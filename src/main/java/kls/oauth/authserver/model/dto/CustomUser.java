@@ -2,11 +2,14 @@ package kls.oauth.authserver.model.dto;
 
 import kls.oauth.authserver.model.entities.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CustomUser extends User {
     private String userId;
@@ -18,10 +21,10 @@ public class CustomUser extends User {
         this.name = userEntity.getName();
     }
 
-    private static Collection <? extends GrantedAuthority> prepareGrantedAuthorities(List <GrantedAuthority> roles, List <GrantedAuthority> permissions) {
-        HashSet <GrantedAuthority> grantedAuthorities = new HashSet <>();
-        grantedAuthorities.addAll(roles);
-        grantedAuthorities.addAll(permissions);
+    private static Collection <? extends GrantedAuthority> prepareGrantedAuthorities(List <String> roles, List <String> permissions) {
+        Set<GrantedAuthority> grantedAuthorities = new HashSet <>();
+        grantedAuthorities.addAll(roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
+        grantedAuthorities.addAll(permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
         return grantedAuthorities;
     }
 

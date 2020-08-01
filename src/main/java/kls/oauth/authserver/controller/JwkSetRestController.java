@@ -24,14 +24,15 @@ public class JwkSetRestController {
         return this.jwkSet.toJSONObject();
     }
 
-    @PostMapping("/exit")
+    @GetMapping("/exit")
     public void exit(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("LOGOUT");
         // token can be revoked here if needed
         new SecurityContextLogoutHandler().logout(request, null, null);
         try {
             //sending back to client app
-            response.sendRedirect(request.getHeader("referer"));
+//            response.sendRedirect(request.getHeader("referer"));
+            response.sendRedirect(request.getHeader("http://localhost:8000/index"));
         } catch (IOException e) {
             e.printStackTrace();
         }
