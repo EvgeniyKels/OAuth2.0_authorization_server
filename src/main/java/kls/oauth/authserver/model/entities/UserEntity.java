@@ -1,75 +1,41 @@
 package kls.oauth.authserver.model.entities;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-@Document(value = "users")
+@Entity
+@Table(name = "user")
+@Getter @Setter @NoArgsConstructor
 public class UserEntity {
     @Id
-    private ObjectId id;
-    @Field(name = "user_id")
-    private String userId;
-    @Field(name = "name")
-    private String name;
-    @Field(name = "email")
-    private String email;
-    @Field(name = "password")
-    private String password;
-    @Field(name = "role")
-    private List<GrantedAuthority>roles;
-    @Field(name = "permission")
-    private List<GrantedAuthority>permissions;
-
-    public UserEntity(String userId, String name, String email, String password, List <GrantedAuthority> roles, List <GrantedAuthority> permissions) {
-        this.userId = userId;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-        this.permissions = permissions;
-    }
-
-    public UserEntity() {
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public List <GrantedAuthority> getRoles() {
-        return roles;
-    }
-
-    public List <GrantedAuthority> getPermissions() {
-        return permissions;
-    }
+    @GenericGenerator(name = "user_id", strategy = "kls.oauth.authserver.utils.model_utils.ClientIdGenerator")
+    @GeneratedValue(generator = "user_id")
+    public String userId;
+    public String userLogin;
+    public String userEmail;
+    public String userPassword;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "role_id") }
+    )
+    public List<AuthRole> roles = new ArrayList<>();
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    public UserMetadata userMetadatara;
 
     @Override
     public String toString() {
-        return "{" +
-                "userId='" + userId + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + " ***** " + '\'' +
-                ", roles=" + roles +
-                ", permissions=" + permissions +
-                '}';
+        return getClass().getSimpleName() +
+                " " +
+                userLogin +
+                " " +
+                userEmail;
     }
 }

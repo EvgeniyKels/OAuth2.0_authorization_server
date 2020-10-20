@@ -1,6 +1,5 @@
 package kls.oauth.authserver;
 
-import kls.oauth.authserver.utils.inserter.Inserter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -12,7 +11,6 @@ import java.util.TimeZone;
 public class AuthServerApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(AuthServerApplication.class);
-        run.getBean(Inserter.class).insertTestData(2);
     }
 
     @PostConstruct
